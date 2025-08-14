@@ -1,11 +1,27 @@
 
 const User = require('../models/User');
+const Cause=require('../models/Cause')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
+
+
+const createCause = async(req,res)=>{
+    const {title,description,targetAmount} = req.body;
+    try{
+        const cause=await Cause.create({
+            title,
+            description,
+            targetAmount,       
+        });
+        res.status(201).json({id: cause.id, title: cause.title, description: cause.description, targetAmount: cause.targetAmount });
+    }catch (error){
+        res.status(500).json({ message: error.message });
+    }
+}
 
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -70,4 +86,4 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, updateUserProfile, getProfile };
+module.exports = { registerUser, loginUser, updateUserProfile, getProfile, createCause };
